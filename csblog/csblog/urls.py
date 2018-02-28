@@ -16,6 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from bookmarks.views import main_page, user_page
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^$', main_page),
+    url(r'^user/(\w+)/$', user_page),
 ]
