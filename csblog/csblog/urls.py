@@ -15,11 +15,22 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.auth.views import login as auth_login
 
-from bookmarks.views import main_page, user_page
+from bookmarks.views import main_page, user_page, logout_page
+
+import os
+site_media = os.path.join(
+    os.path.dirname(__file__), 'site_media'
+)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', main_page),
     url(r'^user/(\w+)/$', user_page),
+    # url(r'^login/$', 'django.contrib.auth.views.login'),
+    url(r'^login/$', auth_login),
+    url(r'^logout/$', logout_page),
+    # url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve',{'document_root': site_media}),
 ]
+
