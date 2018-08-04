@@ -11,6 +11,9 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout
 
+from django.template import RequestContext
+from django.shortcuts import render_to_response
+
 def main_page(request):
     ################ 1
     # output = u'''
@@ -28,19 +31,28 @@ def main_page(request):
     # return HttpResponse(output)
 
     ################ 2
-    template = get_template('main_page.html')
+    # template = get_template('main_page.html')
     # variables = Context({
     #     'head_title': u'Django Bookmarks',
     #     'page_title': u'Welcome to Django Bookmarks',
     #     'page_body': u'Where you can store and share bookmarks!'
     # })
-    variables = {
-        'head_title': u'Django Bookmarks',
-        'page_title': u'Welcome to Django Bookmarks',
-        'page_body': u'Where you can store and share bookmarks!'
-    } 
-    output = template.render(variables)
-    return HttpResponse(output)    
+
+    # variables = {
+    #     'head_title': u'Django Bookmarks',
+    #     'page_title': u'Welcome to Django Bookmarks',
+    #     'page_body': u'Where you can store and share bookmarks!'
+    # } 
+
+    # variables = {'user': request.user}
+
+    # output = template.render(variables)
+    # return HttpResponse(output) 
+
+    return render_to_response(
+        'main_page.html',
+        {'user': request.user}
+        )
 
 
 def user_page(request, username):
@@ -51,24 +63,21 @@ def user_page(request, username):
 
     bookmarks = user.bookmark_set.all()
     template = get_template('user_page.html')
-
-    # variables = Context({
-    #     'username': username,
-    #     'bookmarks': bookmarks
-    # })
     
     # variables = {
     #     'username': username,
     #     'bookmarks': bookmarks
     # }
     
-    # variables = Context({'user': request.user})    
     # output = template.render(variables)
     # return HttpResponse(output)    
 
     return render_to_response(
         'main_page.html',
-        {'user': request.user}
+        {
+            'username': username,
+            'bookmarks': bookmarks
+        }
     )
 
 def logout_page(request):

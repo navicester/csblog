@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.contrib.auth.views import login as auth_login
 
 from bookmarks.views import main_page, user_page, logout_page
+from django.views.static import serve
 
 import os
 site_media = os.path.join(
@@ -32,5 +33,6 @@ urlpatterns = [
     url(r'^login/$', auth_login),
     url(r'^logout/$', logout_page),
     # url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve',{'document_root': site_media}),
+    url(r'^site_media/(?P<path>.*)$', serve, {'document_root': site_media}),
 ]
 

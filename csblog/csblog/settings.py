@@ -68,8 +68,6 @@ TEMPLATES = [
     },
 ]
 
-print TEMPLATES
-
 WSGI_APPLICATION = 'csblog.wsgi.application'
 
 
