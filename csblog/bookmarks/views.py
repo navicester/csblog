@@ -201,3 +201,27 @@ def tag_cloud_page(request):
         'tags': tags
     }
     return render_to_response('tag_cloud_page.html', variables)
+
+def search_page(request):
+    form = SearchForm()
+    bookmarks = []
+    show_results = False
+    if request.GET.has_key('query'):
+        show_results = True
+        query = request.GET['query'].strip()
+        if query:
+            form = SearchForm({'query' : query})
+            bookmarks = \
+                Bookmark.objects.filter (title__icontains=query)[:10]
+                
+    variables = { 
+        'form': form,
+        'bookmarks': bookmarks,
+        'show_results': show_results,
+        'show_tags': True,
+        'show_user': True
+    }
+    if request.GET.has_key('ajax'):
+        return render(request, 'bookmark_list.html', variables)
+    else:
+        return render(request, 'search.html', variables)
