@@ -23,7 +23,8 @@ from bookmarks.views import (
     logout_page, 
     register_page, 
     bookmark_save_page,
-    tag_page
+    tag_page,
+    tag_cloud_page
     )
 from django.views.static import serve
 # from django.views.generic.simple import direct_to_template
@@ -53,6 +54,7 @@ urlpatterns = [
     # Account management
     url(r'^save/$', bookmark_save_page),
     url(r'^tag/([^\s]+)/$', tag_page),
+    url(r'^tag/$', tag_cloud_page),
 
     # Site media
     url(r'^site_media/(?P<path>.*)$', serve, {'document_root': site_media}),

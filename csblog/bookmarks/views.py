@@ -108,14 +108,17 @@ def register_page(request):
     # variables = RequestContext(request, {
     #     'form': form
     #     })
-    variables = {
-        'form': form
-        }   
     # return render_to_response(
     #     'registration/register.html',
-    #     context={'form': form}, 
+    #     variables, 
+    #     )       
+  
+    # return render_to_response(
+    #     'registration/register.html',
+    #     {'form': form}, 
     #     context_instance=RequestContext(request)
-    #     )   
+    #     ) 
+
     # The context_instance parameter in render_to_response was deprecated in Django 1.8, and removed in Django 1.10.
     # The solution is to switch to the render shortcut, which automatically uses a RequestContext. 
     return render(request,
@@ -173,3 +176,28 @@ def tag_page(request, tag_name):
         'show_user': True
     }
     return render(request, 'tag_page.html', context)
+
+def tag_cloud_page(request):
+    MAX_WEIGHT = 5
+    tags = Tag.objects.order_by('name')
+    # Calculate tag, min and max counts.
+    min_count = max_count = tags[0].bookmarks.count()
+    for tag in tags:
+        tag.count = tag.bookmarks.count()
+        if tag.count < min_count:
+            min_count = tag.count
+        if max_count < tag.count:
+            max_count = tag.count
+    # Calculate count range. Avoid dividing by zero.
+    range = float(max_count - min_count)
+    if range == 0.0:
+        range = 1.0
+    # Calculate tag weights.
+    for tag in tags:
+        tag.weight = int(
+            MAX_WEIGHT * (tag.count - min_count) / range
+        )
+    variables = {
+        'tags': tags
+    }
+    return render_to_response('tag_cloud_page.html', variables)
