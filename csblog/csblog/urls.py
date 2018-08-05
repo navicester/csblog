@@ -23,6 +23,7 @@ from bookmarks.views import (
     logout_page, 
     register_page, 
     bookmark_save_page,
+    bookmark_vote_page,
     tag_page,
     tag_cloud_page,
     search_page,
@@ -55,11 +56,13 @@ urlpatterns = [
 
     # Account management
     url(r'^save/$', bookmark_save_page),
+    url(r'^vote/$', bookmark_vote_page),
     url(r'^tag/([^\s]+)/$', tag_page),
     url(r'^tag/$', tag_cloud_page),
 
     url(r'^search/$', search_page),
     url(r'^ajax/tag/autocomplete/$', ajax_tag_autocomplete),
+
 
     # Site media
     url(r'^site_media/(?P<path>.*)$', serve, {'document_root': site_media}),

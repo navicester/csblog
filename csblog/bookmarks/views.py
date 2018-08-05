@@ -56,10 +56,15 @@ def main_page(request):
     # output = template.render(variables)
     # return HttpResponse(output) 
 
+    shared_bookmarks = SharedBookmark.objects.order_by('-date')[:10]
+
     return render_to_response(
         'main_page.html',
-        {'user': request.user}
-        )
+        {
+            'user': request.user,
+            'shared_bookmarks': shared_bookmarks,
+        }
+    )
 
 
 def user_page(request, username):
@@ -150,6 +155,16 @@ def _bookmark_save(request, form):
     for tag_name in tag_names:
         tag, dummy = Tag.objects.get_or_create(name=tag_name)
         bookmark.tag_set.add(tag)
+
+    # Share on the main page if requested.
+    if form.cleaned_data['share']:
+        shared, created = SharedBookmark.objects.get_or_create(
+            bookmark=bookmark
+        )
+        if created:
+            shared.users_voted.add(request.user)
+            shared.save()
+
     # Save bookmark to database.
     bookmark.save()
     return bookmark
@@ -169,8 +184,8 @@ def bookmark_save_page(request):
                     'show_edit': True,
                     'show_tags': True
                 }
-                return render_to_response(
-                    'bookmark_list.html', variables
+                return render(
+                    request, 'bookmark_list.html', variables
                 )
             else:
                 return HttpResponseRedirect(
@@ -183,6 +198,7 @@ def bookmark_save_page(request):
         url = request.GET['url']
         title = ''
         tags = ''
+        # share = False
         try:
             link = Link.objects.get(url=url)
             bookmark = Bookmark.objects.get(
@@ -198,7 +214,8 @@ def bookmark_save_page(request):
         form = BookmarkSaveForm({
             'url': url,
             'title': title,
-            'tags': tags
+            'tags': tags,
+            # 'share' : share
         })
     else:
         form = BookmarkSaveForm()
@@ -206,12 +223,14 @@ def bookmark_save_page(request):
     variables = {"form": form}
 
     if ajax:
-        return render_to_response(
+        return render(
+            request,
             'bookmark_save_form.html',
             variables
         )
     else:
-        return render_to_response(
+        return render(
+            request,
             'bookmark_save.html',
             variables
         )
@@ -286,3 +305,21 @@ def ajax_tag_autocomplete(request):
     tags = Tag.objects.all()
     return HttpResponse(json.dumps([tag.name for tag in tags]))
     
+@login_required
+def bookmark_vote_page(request):
+    if 'id' in request.GET:     
+        try:
+            id = request.GET['id']
+            shared_bookmark = SharedBookmark.objects.get(id=id)
+            user_voted = shared_bookmark.users_voted.filter(
+                username=request.user.username
+            )
+            if not user_voted:
+                shared_bookmark.votes += 1
+                shared_bookmark.users_voted.add(request.user)
+                shared_bookmark.save()
+        except SharedBookmark.DoesNotExist:
+            raise Http404('Bookmark not found.')
+    if 'HTTP_REFERER' in request.META:
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    return HttpResponseRedirect('/')    
