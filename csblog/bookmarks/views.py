@@ -12,7 +12,9 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import logout
 
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
+
+from bookmarks.forms import *
 
 def main_page(request):
     ################ 1
@@ -83,3 +85,36 @@ def user_page(request, username):
 def logout_page(request):
     logout(request)
     return HttpResponseRedirect('/')    
+
+def register_page(request):
+    print request.method
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1'],
+                email=form.cleaned_data['email']
+                )
+            # return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/register/success/')
+    else:
+        form = RegistrationForm()
+
+    # variables = RequestContext(request, {
+    #     'form': form
+    #     })
+    variables = {
+        'form': form
+        }   
+    # return render_to_response(
+    #     'registration/register.html',
+    #     context={'form': form}, 
+    #     context_instance=RequestContext(request)
+    #     )   
+    # The context_instance parameter in render_to_response was deprecated in Django 1.8, and removed in Django 1.10.
+    # The solution is to switch to the render shortcut, which automatically uses a RequestContext. 
+    return render(request,
+        'registration/register.html',
+        {'form': form}
+        )       
