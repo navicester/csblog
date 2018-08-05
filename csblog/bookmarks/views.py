@@ -213,7 +213,7 @@ def search_page(request):
             form = SearchForm({'query' : query})
             bookmarks = \
                 Bookmark.objects.filter (title__icontains=query)[:10]
-                
+
     variables = { 
         'form': form,
         'bookmarks': bookmarks,
