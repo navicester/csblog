@@ -14,6 +14,7 @@ from django.contrib.auth import logout
 
 from django.template import RequestContext
 from django.shortcuts import render_to_response, render
+from django.shortcuts import get_object_or_404
 
 from bookmarks.forms import *
 from bookmarks.models import *
@@ -65,23 +66,23 @@ def user_page(request, username):
     except User.DoesNotExist:
         raise Http404(u'Requested user not found.')
 
-    bookmarks = user.bookmark_set.all()
-    template = get_template('user_page.html')
-    
+    user = get_object_or_404(User, username=username)
+    bookmarks = user.bookmark_set.order_by('-id')
+    # template = get_template('user_page.html')
     # variables = {
     #     'username': username,
     #     'bookmarks': bookmarks
-    # }
-    
+    # }    
     # output = template.render(variables)
     # return HttpResponse(output)    
 
     return render_to_response(
-        'main_page.html',
+        'user_page.html',
         {
             'username': username,
             'bookmarks': bookmarks,
-            'user': request.user
+            'user': request.user,
+            'show_tags': True
         }
     )
 
