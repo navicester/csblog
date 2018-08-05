@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.views import login as auth_login
 
-from bookmarks.views import main_page, user_page, logout_page, register_page
+from bookmarks.views import main_page, user_page, logout_page, register_page, bookmark_save_page
 from django.views.static import serve
 # from django.views.generic.simple import direct_to_template
 from django.views.generic import TemplateView
@@ -29,8 +29,12 @@ site_media = os.path.join(
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+
+    # Browsing
     url(r'^$', main_page),
     url(r'^user/(\w+)/$', user_page),
+
+    # Session management
     # url(r'^login/$', 'django.contrib.auth.views.login'),
     url(r'^login/$', auth_login),
     url(r'^logout/$', logout_page),
@@ -38,6 +42,11 @@ urlpatterns = [
     # url(r'^register/success/$', direct_to_template, {'template': 'registration/register_success.html'}), 
     url(r'^register/success/$', TemplateView.as_view(template_name="registration/register_success.html")), 
     # url(r'^site_media/(?P<path>.*)$', 'django.views.static.serve',{'document_root': site_media}),
+
+    # Account management
+    url(r'^save/$', bookmark_save_page),
+
+    # Site media
     url(r'^site_media/(?P<path>.*)$', serve, {'document_root': site_media}),
 ]
 
