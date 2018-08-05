@@ -17,7 +17,14 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.views import login as auth_login
 
-from bookmarks.views import main_page, user_page, logout_page, register_page, bookmark_save_page
+from bookmarks.views import (
+    main_page, 
+    user_page, 
+    logout_page, 
+    register_page, 
+    bookmark_save_page,
+    tag_page
+    )
 from django.views.static import serve
 # from django.views.generic.simple import direct_to_template
 from django.views.generic import TemplateView
@@ -45,6 +52,7 @@ urlpatterns = [
 
     # Account management
     url(r'^save/$', bookmark_save_page),
+    url(r'^tag/([^\s]+)/$', tag_page),
 
     # Site media
     url(r'^site_media/(?P<path>.*)$', serve, {'document_root': site_media}),
