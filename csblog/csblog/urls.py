@@ -25,7 +25,8 @@ from bookmarks.views import (
     bookmark_save_page,
     tag_page,
     tag_cloud_page,
-    search_page
+    search_page,
+    ajax_tag_autocomplete
     )
 from django.views.static import serve
 # from django.views.generic.simple import direct_to_template
@@ -58,6 +59,7 @@ urlpatterns = [
     url(r'^tag/$', tag_cloud_page),
 
     url(r'^search/$', search_page),
+    url(r'^ajax/tag/autocomplete/$', ajax_tag_autocomplete),
 
     # Site media
     url(r'^site_media/(?P<path>.*)$', serve, {'document_root': site_media}),

@@ -19,6 +19,8 @@ from django.shortcuts import get_object_or_404
 from bookmarks.forms import *
 from bookmarks.models import *
 
+import json
+
 def main_page(request):
     ################ 1
     # output = u'''
@@ -273,3 +275,14 @@ def search_page(request):
         return render(request, 'bookmark_list.html', variables)
     else:
         return render(request, 'search.html', variables)
+
+
+def ajax_tag_autocomplete(request):
+    if 'q' in request.GET:
+        tags = Tag.objects.filter(
+            name__istartswith=request.GET['q'])[:10]
+        return HttpResponse(json.dumps([tag.name for tag in tags]))
+
+    tags = Tag.objects.all()
+    return HttpResponse(json.dumps([tag.name for tag in tags]))
+    
