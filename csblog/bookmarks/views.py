@@ -152,14 +152,31 @@ def _bookmark_save(request, form):
     bookmark.save()
     return bookmark
 
+from django.views.decorators.csrf import csrf_protect  
+@csrf_protect
 @login_required
 def bookmark_save_page(request):
+    ajax = 'ajax' in request.GET
     if request.method == 'POST':
         form = BookmarkSaveForm(request.POST)
         if form.is_valid():
             bookmark = _bookmark_save(request, form)
-            return HttpResponseRedirect(
-                '/user/%s/' % request.user.username)
+            if ajax:
+                variables = {
+                    'bookmarks': [bookmark],
+                    'show_edit': True,
+                    'show_tags': True
+                }
+                return render_to_response(
+                    'bookmark_list.html', variables
+                )
+            else:
+                return HttpResponseRedirect(
+                    '/user/%s/' % request.user.username
+                )
+        else:
+            if ajax:
+                return HttpResponse(u'failure')                
     elif 'url' in request.GET:
         url = request.GET['url']
         title = ''
@@ -185,8 +202,14 @@ def bookmark_save_page(request):
         form = BookmarkSaveForm()
     
     variables = {"form": form}
-    return render(
-            request,
+
+    if ajax:
+        return render_to_response(
+            'bookmark_save_form.html',
+            variables
+        )
+    else:
+        return render_to_response(
             'bookmark_save.html',
             variables
         )
