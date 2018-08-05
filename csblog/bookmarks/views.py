@@ -8,6 +8,7 @@ from django.http import HttpResponse, Http404
 from django.template import Context
 from django.template.loader import get_template
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout
 
@@ -79,7 +80,8 @@ def user_page(request, username):
         'main_page.html',
         {
             'username': username,
-            'bookmarks': bookmarks
+            'bookmarks': bookmarks,
+            'user': request.user
         }
     )
 
@@ -120,6 +122,8 @@ def register_page(request):
         {'form': form}
         )       
 
+
+@login_required
 def bookmark_save_page(request):
     if request.method == 'POST':
         form = BookmarkSaveForm(request.POST)
