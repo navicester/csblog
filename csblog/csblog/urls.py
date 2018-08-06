@@ -28,6 +28,7 @@ from bookmarks.views import (
     tag_page,
     tag_cloud_page,
     search_page,
+    bookmark_page,
     ajax_tag_autocomplete
     )
 from django.views.static import serve
@@ -61,6 +62,7 @@ urlpatterns = [
     url(r'^vote/$', bookmark_vote_page),
     url(r'^tag/([^\s]+)/$', tag_page),
     url(r'^tag/$', tag_cloud_page),
+    url(r'^bookmark/(\d+)/$', bookmark_page),
 
     url(r'^search/$', search_page),
     url(r'^ajax/tag/autocomplete/$', ajax_tag_autocomplete),
