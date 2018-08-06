@@ -40,6 +40,8 @@ site_media = os.path.join(
     os.path.dirname(__file__), 'site_media'
 )
 
+admin.autodiscover()
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
