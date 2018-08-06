@@ -17,6 +17,9 @@ from django.shortcuts import render_to_response, render
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
+from django.core.paginator import Paginator, InvalidPage
+ITEMS_PER_PAGE = 2
+
 from bookmarks.forms import *
 from bookmarks.models import *
 
@@ -75,7 +78,21 @@ def user_page(request, username):
         raise Http404(u'Requested user not found.')
 
     user = get_object_or_404(User, username=username)
-    bookmarks = user.bookmark_set.order_by('-id')
+    # bookmarks = user.bookmark_set.order_by('-id')
+
+    query_set = user.bookmark_set.order_by('-id')
+    paginator = Paginator(query_set, ITEMS_PER_PAGE)
+    try:
+        page_number = int(request.GET['page'])
+    except (KeyError, ValueError):
+        page_number = 1
+    try:
+        page = paginator.page(page_number)
+    except InvalidPage:
+        raise Http404
+    bookmarks = page.object_list
+
+
     # template = get_template('user_page.html')
     # variables = {
     #     'username': username,
@@ -92,6 +109,13 @@ def user_page(request, username):
             'user': request.user,
             'show_tags': True,
             'show_edit': username == request.user.username,
+            'show_paginator': paginator.num_pages > 1,
+            'has_prev': page.has_previous(),
+            'has_next': page.has_next(),
+            'page': page_number,
+            'pages': paginator.num_pages,
+            'next_page': page_number + 1,
+            'prev_page': page_number - 1
         }
     )
 
