@@ -343,4 +343,4 @@ def bookmark_page(request, bookmark_id):
     variables = {
         'shared_bookmark': shared_bookmark
     }
-    return render_to_response('bookmark_page.html', variables)    
+    return render(request, 'bookmark_page.html', variables)    
