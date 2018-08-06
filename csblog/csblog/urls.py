@@ -29,7 +29,9 @@ from bookmarks.views import (
     tag_cloud_page,
     search_page,
     bookmark_page,
-    ajax_tag_autocomplete
+    ajax_tag_autocomplete,
+    friends_page,
+    friend_add
     )
 from django.views.static import serve
 # from django.views.generic.simple import direct_to_template
@@ -70,6 +72,9 @@ urlpatterns = [
     url(r'^ajax/tag/autocomplete/$', ajax_tag_autocomplete),
 
     url(r'^comments/',include('django_comments.urls')),
+
+    url(r'^friends/(\w+)/$', friends_page),
+    url(r'^friend/add/$', friend_add),
 
 
     # Site media

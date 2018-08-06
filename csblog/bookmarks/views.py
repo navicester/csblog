@@ -92,6 +92,14 @@ def user_page(request, username):
         raise Http404
     bookmarks = page.object_list
 
+    if request.user.is_authenticated():
+        is_friend = Friendship.objects.filter(
+            from_friend=request.user,
+            to_friend=user
+        )
+    else:
+        is_friend = False
+
 
     # template = get_template('user_page.html')
     # variables = {
@@ -115,7 +123,8 @@ def user_page(request, username):
             'page': page_number,
             'pages': paginator.num_pages,
             'next_page': page_number + 1,
-            'prev_page': page_number - 1
+            'prev_page': page_number - 1,
+            'is_friend': is_friend,
         }
     )
 
@@ -372,3 +381,31 @@ def bookmark_page(request, bookmark_id):
         'shared_bookmark': shared_bookmark
     }
     return render(request, 'bookmark_page.html', variables)    
+
+def friends_page(request, username):
+    user = get_object_or_404(User, username=username)
+    friends = [friendship.to_friend for friendship in user.friend_set.all()]
+    friend_bookmarks = Bookmark.objects.filter(user__in=friends    ).order_by('-id')
+    variables = {
+        'username': username,
+        'friends': friends,
+        'bookmarks': friend_bookmarks[:10],
+        'show_tags': True,
+        'show_user': True
+    }
+    return render(request, 'friends_page.html', variables)    
+
+@login_required
+def friend_add(request):
+    if 'username' in request.GET:
+        friend = get_object_or_404(
+            User, username=request.GET['username']
+        )
+        friendship = Friendship(
+            from_friend=request.user,
+            to_friend=friend
+        )
+        friendship.save()
+        return HttpResponseRedirect('/friends/%s/' % request.user.username)
+    else:
+        raise Http404    
