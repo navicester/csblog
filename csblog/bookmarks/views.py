@@ -15,6 +15,7 @@ from django.contrib.auth import logout
 from django.template import RequestContext
 from django.shortcuts import render_to_response, render
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from bookmarks.forms import *
 from bookmarks.models import *
@@ -269,7 +270,7 @@ def tag_cloud_page(request):
     variables = {
         'tags': tags
     }
-    return render_to_response('tag_cloud_page.html', variables)
+    return render(request, 'tag_cloud_page.html', variables)
 
 def search_page(request):
     form = SearchForm()
@@ -279,9 +280,12 @@ def search_page(request):
         show_results = True
         query = request.GET['query'].strip()
         if query:
+            keywords = query.split()
+            q = Q()
+            for keyword in keywords:
+                q = q | Q(title__icontains=keyword)
             form = SearchForm({'query' : query})
-            bookmarks = \
-                Bookmark.objects.filter (title__icontains=query)[:10]
+            bookmarks = Bookmark.objects.filter(q)[:10]
 
     variables = { 
         'form': form,
@@ -333,7 +337,7 @@ def popular_page(request):
     variables = {
         'shared_bookmarks': shared_bookmarks
     }
-    return render_to_response('popular_page.html', variables)    
+    return render(request, 'popular_page.html', variables)    
 
 def bookmark_page(request, bookmark_id):
     shared_bookmark = get_object_or_404(
