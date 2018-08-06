@@ -135,3 +135,12 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/login/'
 
 SITE_ID = 1
+
+# mail
+import security
+SITE_HOST = '127.0.0.1:8000'
+DEFAULT_FROM_EMAIL = security.USER_NAME #'Django Bookmarks <django.bookmarks@example.com>'
+EMAIL_HOST = 'smtp.sina.com' #'mail.yourisp.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = security.USER_NAME
+EMAIL_HOST_PASSWORD = security.USER_PWD
