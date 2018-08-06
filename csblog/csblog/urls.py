@@ -32,7 +32,8 @@ from bookmarks.views import (
     ajax_tag_autocomplete,
     friends_page,
     friend_add,
-    friend_invite
+    friend_invite,
+    friend_accept
     )
 from django.views.static import serve
 # from django.views.generic.simple import direct_to_template
@@ -77,6 +78,7 @@ urlpatterns = [
     url(r'^friends/(\w+)/$', friends_page),
     url(r'^friend/add/$', friend_add),
     url(r'^friend/invite/$', friend_invite),
+    url(r'^friend/accept/(\w+)/$', friend_accept),
 
 
     # Site media

@@ -133,7 +133,6 @@ def logout_page(request):
     return HttpResponseRedirect('/')    
 
 def register_page(request):
-    print request.method
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -142,7 +141,30 @@ def register_page(request):
                 password=form.cleaned_data['password1'],
                 email=form.cleaned_data['email']
                 )
-            # return HttpResponseRedirect('/')
+            
+            # invitation
+            if 'invitation' in request.session:
+                print "shit"
+                # Retrieve the invitation object.
+                invitation = Invitation.objects.get(
+                    id=request.session['invitation']
+                )
+                # Create friendship from user to sender.
+                friendship = Friendship(
+                    from_friend=user,
+                    to_friend=invitation.sender
+                )
+                friendship.save()
+                # Create friendship from sender to user.
+                friendship = Friendship (
+                    from_friend=invitation.sender,
+                    to_friend=user
+                )
+                friendship.save()
+                # Delete the invitation from the database and session.
+                invitation.delete()
+                del request.session['invitation']
+
             return HttpResponseRedirect('/register/success/')
     else:
         form = RegistrationForm()
@@ -430,3 +452,8 @@ def friend_invite(request):
         'form': form
         }
     return render(request, 'friend_invite.html', variables)        
+
+def friend_accept(request, code):
+    invitation = get_object_or_404(Invitation, code__exact=code)
+    request.session['invitation'] = invitation.id
+    return HttpResponseRedirect('/register/') 
