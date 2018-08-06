@@ -20,6 +20,7 @@ from django.contrib.auth.views import login as auth_login
 from bookmarks.views import (
     main_page, 
     user_page, 
+    popular_page,
     logout_page, 
     register_page, 
     bookmark_save_page,
@@ -44,6 +45,7 @@ urlpatterns = [
     # Browsing
     url(r'^$', main_page),
     url(r'^user/(\w+)/$', user_page),
+    url(r'^popular/$', popular_page),
 
     # Session management
     # url(r'^login/$', 'django.contrib.auth.views.login'),

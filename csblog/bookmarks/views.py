@@ -323,3 +323,14 @@ def bookmark_vote_page(request):
     if 'HTTP_REFERER' in request.META:
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     return HttpResponseRedirect('/')    
+
+from datetime import datetime, timedelta
+def popular_page(request):
+    today = datetime.today()
+    yesterday = today - timedelta(1)
+    shared_bookmarks = SharedBookmark.objects.filter(date__gt=yesterday)
+    shared_bookmarks = shared_bookmarks.order_by('-votes')[:10]
+    variables = {
+        'shared_bookmarks': shared_bookmarks
+    }
+    return render_to_response('popular_page.html', variables)    
