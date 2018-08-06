@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout
+from django.contrib import messages
 
 from django.template import RequestContext
 from django.shortcuts import render_to_response, render
@@ -24,6 +25,7 @@ from bookmarks.forms import *
 from bookmarks.models import *
 
 import json
+import smtplib
 
 def main_page(request):
     ################ 1
@@ -427,7 +429,13 @@ def friend_add(request):
             from_friend=request.user,
             to_friend=friend
         )
-        friendship.save()
+        try:
+            friendship.save()
+            messages.success(request, u'%s was added to your friend list.' %
+                friend.username)
+        except:
+            messages.success(request, u'%s is already a friend of yours.' %
+                friend.username)
         return HttpResponseRedirect('/friends/%s/' % request.user.username)
     else:
         raise Http404    
@@ -444,7 +452,13 @@ def friend_invite(request):
                 sender=request.user
             )
             invitation.save()
-            invitation.send()
+            try:
+                invitation.send()
+                messages.success(request, u'An invitation was sent to %s.' %
+                    invitation.email)
+            except smtplib.SMTPException:
+                messages.success(request, u'An error happened when '
+                    u'sending the invitation.')
             return HttpResponseRedirect('/friend/invite/')
     else:
         form = FriendInviteForm()
