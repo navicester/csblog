@@ -25,7 +25,7 @@ SECRET_KEY = 'm__h#=%^q!aj*lf3!m%ef9xnw7nhl@af9ww+b6=r%hbj6h^bc0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [u'bookmark.codingsoho.com']
 
 
 # Application definition
